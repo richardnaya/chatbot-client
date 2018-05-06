@@ -1,0 +1,96 @@
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="description" content="client side chatbot that can be embedded in any web site.">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0">
+  <title>Liho! Saihu (Hello! Master)...</title>
+  <link rel="stylesheet" href="samples/chat.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/localforage/1.5.5/localforage.min.js"></script>
+  <script src="saihubot.js"></script>
+  <script src="adapters/saihubot-adapter-basic.js"></script>
+  <script src="addons/saihubot-brain-localforage.js"></script>
+  <script src="addons/saihubot-dialog.js"></script>
+  <script src="plugins/saihubot-diagnostics.js"></script>
+  <script src="plugins/saihubot-help.js"></script>
+  <script src="plugins/saihubot-search.js"></script>
+</head>
+
+<body>
+  <div class="chat-frame">
+    <div class="chat-content">
+      <div id="history"></div>
+    </div>
+    <div class="chat-footer">
+      <input id="message" autocomplete="off"><button id="send">Send</button>
+    </div>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      SaihuBot.prototype.responses.push(
+      { name: 'home',
+        help: 'home - search github for saihubot',
+        rule: /HOME/i,
+        action: function(robot, msg) {
+          robot.ask('github saihubot');
+        },
+      });
+      SaihuBot.prototype.responses.push(
+      { name: 'sample',
+        help: 'sample - show saihu samples',
+        rule: /SAMPLE/i,
+        action: function(robot, msg) {
+          robot.confirm('Here are samples',
+          ['hello', {
+            name: 'hello bot',
+            rule: '/hello/i',
+            action: function() {
+              robot.send('Open hello bot sample');
+              robot.render();
+              window.open('samples/index.html', '_blank');
+            }
+          }],
+          ['plugin', {
+            name: 'plugin',
+            rule: '/PLUGIN/i',
+            action: function() {
+              robot.send('Open plugin sample');
+              robot.render();
+              window.open('samples/plugin.html', '_blank');
+            }
+          }]
+        );
+      }});
+      
+      var message = document.createElement('span');
+      var line1 = document.createTextNode('🤖 Hello! type `echo bot` see what\'s happened');
+      message.appendChild(line1);
+      // var line2 = document.createElement('a');
+      // line2.href = "https://github.com/gasolin/saihubot/";
+      // line2.textContent = "Download Saihubot";
+      // message.appendChild(line2);
+
+      new SaihuBot({
+        adapter: basicAdapter,
+        brain: localforageBrain,
+        welcomeMessage: message,
+        notFoundMessages: [
+          'type `ping`, `time`, or `echo [message]` to see what\'s happened',
+          'type `google [keyword]`, `wiki [keyword]` to search',
+          'type `help` for full sample commands list',
+          'Want more samples? type `samples`',
+          'Try refresh the page, messages are cached locally',
+          'type `github saihubot` to visit me and give a star!',
+          'you can ask anything ex: `siri who is current Us president?`',
+        ],
+        bot: "🤖",
+        user: "😎",
+      });
+    });
+  </script>
+  <script src="samples/ga.js"></script>
+</body>
+
+</html>
